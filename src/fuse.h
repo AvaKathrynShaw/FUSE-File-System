@@ -64,23 +64,28 @@ typedef int (*fuse_dirfil_t) (fuse_dirh_t h, const char *name, int type,
 			      ino_t ino);
 
 struct inode{
-	int index;
-	int size;
-	int mode; /*type (file or directory)*/
-	struct inode *next, *prev;
-}
+int index; /* ino*/
+int size;
+int mode; /*type (file or directory)*/
+struct inode *next, *prev;
+};
 
 struct dirEnt{
-	struct inode* in;
-	int length; /*Length of directory entry*/
-	char* name;
-	struct dirEnt *next;
-	struct dirEnt *prev;
-}
+struct inode* in;
+int length; /*Length of directory entry*/
+char* name;
+struct dirEnt *parent *child;
+/* struct directory *child? ---- saw an implementation that was like this*/ 
+/* struct directory subdirectory??? */
+};
 
 struct directory{
-	struct dirEnt *head;
-}
+/* same as list_head? */ 
+/* should we have? *next, *prev*/
+struct dirEnt *head;
+};
+
+/*do we need a struct file?, i dont think so*/
 
 /**
  * The file system operations:

@@ -315,6 +315,7 @@ void sfs_usage()
 int main(int argc, char *argv[])
 {
     int fuse_stat;
+    //is this important??
     struct sfs_state *sfs_data;
     
     // sanity checking on the command line
