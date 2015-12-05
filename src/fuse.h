@@ -24,6 +24,7 @@
 #endif
 
 #include "fuse_common.h"
+#include "block.h"
 
 #include <fcntl.h>
 #include <time.h>
@@ -36,6 +37,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	  /*GLOBALS*/
+
+  #define NUM_BLOCKS 1024
+  #define INODE_SIZE 128 //according to recitation slides all inode sizes in linux 2.2 are 128 bytes
+  #define NUM_INODES NUM_BLOCKS
+  #define SUPER_BLOCK_SIZE (sizeof(struct SuperBlock))
+  #define NUM_SUPERBLOCKS NUM_BLOCKS
+  #define DISK_SIZE ((NUM_BLOCKS * 512)+(INODE_SIZE * NUM_INODES)+(NUM_SUPERBLOCKS*SUPER_BLOCK_SIZE) //512 being the block size
+  #define MAX_PATH_SIZE 64
+  
 
 /* ----------------------------------------------------------- *
  * Basic FUSE API					       *
