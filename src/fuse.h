@@ -85,6 +85,18 @@ struct directory{
 struct dirEnt *head;
 };
 
+struct SuperBlock{
+	int numInodes;
+	int numDataBlocks;
+	int numFreeBlocks;
+	int numFreeInodes;
+	int superBlockSize;
+	int blocksPerGroup;
+	int inodesPerGroup;
+	int mountCounter;
+
+}
+
 /*do we need a struct file?, i dont think so*/
 
 /**
