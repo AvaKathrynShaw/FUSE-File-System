@@ -63,6 +63,8 @@ void *sfs_init(struct fuse_conn_info *conn)
     log_conn(conn);
     log_fuse_context(fuse_get_context());
 
+    fprintf("%s\n", (char*)SFS_DATA);
+
     return SFS_DATA;
 }
 
@@ -89,7 +91,7 @@ void sfs_destroy(void *userdata)
  * ignored.  The 'st_ino' field is ignored except if the 'use_ino'
  * mount option is given.
  */
-int sfs_getattr(const char *path, struct stat *sb)
+int sfs_getattr(const char *path, struct stat *statbuf)
 {
 
   //Return file attributes. The ”stat” structure is described in detail in the stat(2) manual page. For the given
@@ -102,17 +104,9 @@ int sfs_getattr(const char *path, struct stat *sb)
 
     //below code is a sample from the man pages for stat(2)
 
-      if (argc != 2) {
-               fprintf(stderr, "Usage: %s <pathname>\n", argv[0]);
-               exit(EXIT_FAILURE);
-           }
-
-      if (stat(argv[1], &sb) == -1) {
-               perror("stat");
-               exit(EXIT_FAILURE);
-           }
-
     log_msg("\nstarting get attributes");
+
+    /*    Can be used to test after we initalize
 
                printf("File type:                ");
 
@@ -146,9 +140,7 @@ int sfs_getattr(const char *path, struct stat *sb)
            printf("Last status change:       %s", ctime(&sb.st_ctime));
            printf("Last file access:         %s", ctime(&sb.st_atime));
            printf("Last file modification:   %s", ctime(&sb.st_mtime));
-
-           exit(EXIT_SUCCESS);
-       }
+       */
     
     log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
 	  path, statbuf);

@@ -46,7 +46,7 @@ extern "C" {
   #define SUPER_BLOCK_SIZE (sizeof(struct SuperBlock))
   #define NUM_SUPERBLOCKS NUM_BLOCKS
   #define DISK_SIZE ((NUM_BLOCKS * 512)+(INODE_SIZE * NUM_INODES)+(NUM_SUPERBLOCKS*SUPER_BLOCK_SIZE) //512 being the block size
-  #define MAX_PATH_SIZE 64
+ 
   
 
 /* ----------------------------------------------------------- *
@@ -86,7 +86,7 @@ struct dirEnt{
 struct inode* in;
 int length; /*Length of directory entry*/
 char* name;
-struct dirEnt *parent *child;
+struct dirEnt *parent, *child;
 /* struct directory *child? ---- saw an implementation that was like this*/ 
 /* struct directory subdirectory??? */
 };
@@ -107,7 +107,7 @@ struct SuperBlock{
 	int inodesPerGroup;
 	int mountCounter;
 
-}
+};
 
 /*do we need a struct file?, i dont think so*/
 
