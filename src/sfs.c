@@ -21,7 +21,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+ #include <time.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
@@ -52,6 +54,9 @@
  */
 void *sfs_init(struct fuse_conn_info *conn)
 {
+    log_msg("\nstarting init");
+
+
     fprintf(stderr, "in bb-init\n");
     log_msg("\nsfs_init()\n");
     
@@ -72,7 +77,7 @@ void sfs_destroy(void *userdata)
 {
     log_msg("\nstarting get destroy");
 
-    //code here
+    //Called when the filesystem exits. The private data comes from the return value of init.
 
 
     log_msg("\nsfs_destroy(userdata=0x%08x)\n", userdata);
@@ -84,14 +89,66 @@ void sfs_destroy(void *userdata)
  * ignored.  The 'st_ino' field is ignored except if the 'use_ino'
  * mount option is given.
  */
-int sfs_getattr(const char *path, struct stat *statbuf)
+int sfs_getattr(const char *path, struct stat *sb)
 {
+
+  //Return file attributes. The ”stat” structure is described in detail in the stat(2) manual page. For the given
+//pathname, this should fill in the elements of the ”stat” structure. If a field is meaningless or semi-meaningless
+//(e.g., st ino) then it should be set to 0 or given a ”reasonable” value. This call is pretty much required for a
+//usable filesystem.
+
     int retstat = 0;
     char fpath[PATH_MAX];
 
+    //below code is a sample from the man pages for stat(2)
+
+      if (argc != 2) {
+               fprintf(stderr, "Usage: %s <pathname>\n", argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+      if (stat(argv[1], &sb) == -1) {
+               perror("stat");
+               exit(EXIT_FAILURE);
+           }
+
     log_msg("\nstarting get attributes");
 
-    //code here
+               printf("File type:                ");
+
+           switch (sb.st_mode & S_IFMT) {
+           case S_IFBLK:  printf("block device\n");            break;
+           case S_IFCHR:  printf("character device\n");        break;
+           case S_IFDIR:  printf("directory\n");               break;
+           case S_IFIFO:  printf("FIFO/pipe\n");               break;
+           case S_IFLNK:  printf("symlink\n");                 break;
+           case S_IFREG:  printf("regular file\n");            break;
+           case S_IFSOCK: printf("socket\n");                  break;
+           default:       printf("unknown?\n");                break;
+           }
+
+           printf("I-node number:            %ld\n", (long) sb.st_ino);
+
+           printf("Mode:                     %lo (octal)\n",
+                   (unsigned long) sb.st_mode);
+
+           printf("Link count:               %ld\n", (long) sb.st_nlink);
+           printf("Ownership:                UID=%ld   GID=%ld\n",
+                   (long) sb.st_uid, (long) sb.st_gid);
+
+           printf("Preferred I/O block size: %ld bytes\n",
+                   (long) sb.st_blksize);
+           printf("File size:                %lld bytes\n",
+                   (long long) sb.st_size);
+           printf("Blocks allocated:         %lld\n",
+                   (long long) sb.st_blocks);
+
+           printf("Last status change:       %s", ctime(&sb.st_ctime));
+           printf("Last file access:         %s", ctime(&sb.st_atime));
+           printf("Last file modification:   %s", ctime(&sb.st_mtime));
+
+           exit(EXIT_SUCCESS);
+       }
     
     log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
 	  path, statbuf);
@@ -114,11 +171,23 @@ int sfs_getattr(const char *path, struct stat *statbuf)
 int sfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
 
+  //Create and open a file, how to do this??
+
   log_msg("\nstarting create");
 
-  //code here
+  int retstat = 0;
 
-    int retstat = 0;
+  //read super block
+  //create inode for data
+  //check mode
+
+    //if a directory create a directory by using path, you cannot create a 
+    //directory with items already created in it, the only data is the mode and path name (Do we only take in absolute paths??)
+
+    //else
+    //place data in fuse_file_info in block
+
+    
 
     log_msg("\nsfs_create(path=\"%s\", mode=0%03o, fi=0x%08x)\n",
 	    path, mode, fi);
@@ -131,10 +200,25 @@ int sfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 int sfs_unlink(const char *path)
 {
 
+  //Remove (delete) the given file, symbolic link, hard link, or special node. Note that if you support hard links,
+//unlink only deletes the data when the last hard link is removed. For our purposes, presume that you will only
+//be working with files.
+
     log_msg("\nstarting unlink");
 
-    //code here
+    //check that what you are unlinking is not NULL
+    if (fuse_get_context()->private_data == NULL){
+      log_msg("Trying to unlink data set to NULL");
+      return 0;
+    }
+    /*
+      else
+        get attributes
+        take data out of disk
+        update inodes
+        upadte superblock
 
+    */
 
     int retstat = 0;
     log_msg("sfs_unlink(path=\"%s\")\n", path);
