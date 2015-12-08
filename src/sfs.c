@@ -56,6 +56,12 @@ void *sfs_init(struct fuse_conn_info *conn)
 {
     log_msg("\nstarting init");
 
+    disk_open(SFS_DATA->diskfile);
+
+    //initalize superblock
+
+    //initalize array of null inodes
+
 
     fprintf(stderr, "in bb-init\n");
     log_msg("\nsfs_init()\n");
@@ -63,7 +69,9 @@ void *sfs_init(struct fuse_conn_info *conn)
     log_conn(conn);
     log_fuse_context(fuse_get_context());
 
-    fprintf("%s\n", (char*)SFS_DATA);
+    log_msg("%s\n", (char*)SFS_DATA->diskfile);
+
+    disk_close();
 
     return SFS_DATA;
 }
@@ -77,6 +85,8 @@ void *sfs_init(struct fuse_conn_info *conn)
  */
 void sfs_destroy(void *userdata)
 {
+
+    disk_open(SFS_DATA->diskfile);
     log_msg("\nstarting get destroy");
 
     //Called when the filesystem exits. The private data comes from the return value of init.
@@ -102,9 +112,13 @@ int sfs_getattr(const char *path, struct stat *statbuf)
     int retstat = 0;
     char fpath[PATH_MAX];
 
+
+
     //below code is a sample from the man pages for stat(2)
 
     log_msg("\nstarting get attributes");
+
+    log_stat(statbuf);
 
     /*    Can be used to test after we initalize
 
@@ -167,18 +181,23 @@ int sfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 
   log_msg("\nstarting create");
 
-  int retstat = 0;
 
+  disk_open(path);
+
+  int retstat = 0;
+  //open disk
   //read super block
   //create inode for data
   //check mode
+
 
     //if a directory create a directory by using path, you cannot create a 
     //directory with items already created in it, the only data is the mode and path name (Do we only take in absolute paths??)
 
     //else
     //place data in fuse_file_info in block
-
+    //
+    log_fi (fi);
     
 
     log_msg("\nsfs_create(path=\"%s\", mode=0%03o, fi=0x%08x)\n",
@@ -397,9 +416,26 @@ int sfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offse
 	       struct fuse_file_info *fi)
 {
   log_msg("\nstarting read dir");
+ int retstat = 0;
 
-  //code here
-    int retstat = 0;
+     DIR *dp;
+    struct dirent *de;
+
+    (void) offset;
+    (void) fi;
+
+    /* check if user can open the directory */
+    dp = opendir(path);
+    if (dp == NULL)
+        return -errno;
+
+    /* add all directory entries to buffer */
+    while ((de = readdir(dp)) != NULL) {
+        struct stat st;
+        memset(&st, 0, sizeof(st));
+        //st.st_ino = de-&gt;d_ino;
+       // st.st_mode = de-&gt;d_type;
+      }
     
     
     return retstat;

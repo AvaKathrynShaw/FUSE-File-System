@@ -23,6 +23,8 @@
 // maintain bbfs state in here
 #include <limits.h>
 #include <stdio.h>
+
+  
 struct sfs_state {
     FILE *logfile;
     char *diskfile;

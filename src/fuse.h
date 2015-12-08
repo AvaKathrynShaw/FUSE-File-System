@@ -44,8 +44,7 @@ extern "C" {
   #define INODE_SIZE 128 //according to recitation slides all inode sizes in linux 2.2 are 128 bytes
   #define NUM_INODES NUM_BLOCKS
   #define SUPER_BLOCK_SIZE (sizeof(struct SuperBlock))
-  #define NUM_SUPERBLOCKS NUM_BLOCKS
-  #define DISK_SIZE ((NUM_BLOCKS * 512)+(INODE_SIZE * NUM_INODES)+(NUM_SUPERBLOCKS*SUPER_BLOCK_SIZE) //512 being the block size
+  #define DISK_SIZE ((NUM_BLOCKS * 512)+(INODE_SIZE * NUM_INODES)+ SUPER_BLOCK_SIZE //512 being the block size
  
   
 
