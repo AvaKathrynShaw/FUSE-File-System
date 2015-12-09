@@ -56,14 +56,17 @@ void *sfs_init(struct fuse_conn_info *conn)
 {
     log_msg("\nstarting init");
 
+    struct dirEnt *root=malloc (sizeof(struct dirEnt));
+    struct SuperBlock *SBlock=malloc (sizeof(struct SuperBlock));
     disk_open(SFS_DATA->diskfile);
+
+    
+
 
     //initalize superblock
 
     //initalize array of null inodes
 
-
-    fprintf(stderr, "in bb-init\n");
     log_msg("\nsfs_init()\n");
     
     log_conn(conn);
@@ -93,6 +96,8 @@ void sfs_destroy(void *userdata)
 
 
     log_msg("\nsfs_destroy(userdata=0x%08x)\n", userdata);
+
+    disk_close();
 }
 
 /** Get file attributes.
@@ -112,50 +117,17 @@ int sfs_getattr(const char *path, struct stat *statbuf)
     int retstat = 0;
     char fpath[PATH_MAX];
 
+    disk_open(SFS_DATA->diskfile);
 
+    retstat = lstat(path, statbuf);
+    if (res == -1){
+        return -errno;
+      }
 
     //below code is a sample from the man pages for stat(2)
 
-    log_msg("\nstarting get attributes");
-
+    log_msg("\nstarting get attributes\n");
     log_stat(statbuf);
-
-    /*    Can be used to test after we initalize
-
-               printf("File type:                ");
-
-           switch (sb.st_mode & S_IFMT) {
-           case S_IFBLK:  printf("block device\n");            break;
-           case S_IFCHR:  printf("character device\n");        break;
-           case S_IFDIR:  printf("directory\n");               break;
-           case S_IFIFO:  printf("FIFO/pipe\n");               break;
-           case S_IFLNK:  printf("symlink\n");                 break;
-           case S_IFREG:  printf("regular file\n");            break;
-           case S_IFSOCK: printf("socket\n");                  break;
-           default:       printf("unknown?\n");                break;
-           }
-
-           printf("I-node number:            %ld\n", (long) sb.st_ino);
-
-           printf("Mode:                     %lo (octal)\n",
-                   (unsigned long) sb.st_mode);
-
-           printf("Link count:               %ld\n", (long) sb.st_nlink);
-           printf("Ownership:                UID=%ld   GID=%ld\n",
-                   (long) sb.st_uid, (long) sb.st_gid);
-
-           printf("Preferred I/O block size: %ld bytes\n",
-                   (long) sb.st_blksize);
-           printf("File size:                %lld bytes\n",
-                   (long long) sb.st_size);
-           printf("Blocks allocated:         %lld\n",
-                   (long long) sb.st_blocks);
-
-           printf("Last status change:       %s", ctime(&sb.st_ctime));
-           printf("Last file access:         %s", ctime(&sb.st_atime));
-           printf("Last file modification:   %s", ctime(&sb.st_mtime));
-       */
-    
     log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
 	  path, statbuf);
     

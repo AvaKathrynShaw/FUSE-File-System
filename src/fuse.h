@@ -74,29 +74,27 @@ typedef struct fuse_dirhandle *fuse_dirh_t;
 typedef int (*fuse_dirfil_t) (fuse_dirh_t h, const char *name, int type,
 			      ino_t ino);
 
-struct inode{
+typedef struct inode{
 int index; /* ino*/
 int size;
 int mode; /*type (file or directory)*/
 struct inode *next, *prev;
-};
+} inode;
 
-struct dirEnt{
+typedef struct dirEnt{
 struct inode* in;
 int length; /*Length of directory entry*/
 char* name;
 struct dirEnt *parent, *child;
 /* struct directory *child? ---- saw an implementation that was like this*/ 
 /* struct directory subdirectory??? */
-};
+} dirEnt;
 
-struct directory{
-/* same as list_head? */ 
-/* should we have? *next, *prev*/
+typedef struct directory{
 struct dirEnt *head;
-};
+}directory;
 
-struct SuperBlock{
+typedef struct SuperBlock{
 	int numInodes;
 	int numDataBlocks;
 	int numFreeBlocks;
@@ -106,7 +104,7 @@ struct SuperBlock{
 	int inodesPerGroup;
 	int mountCounter;
 
-};
+}SuperBlock;
 
 /*do we need a struct file?, i dont think so*/
 
